@@ -600,8 +600,8 @@ class AccountMoveTest(common.L10nDOTestsCommon):
         stamp = (
             "https%3A%2F%2Fecf.dgii.gov.do%2FTesteCF%2FConsultaTimbre%3FRncEmisor"
             "%3D131793916%26RncComprador%3D131566332%26ENCF%3DE310000000001%26Fec"
-            "haEmision%3D16-10-2021%26MontoTotal%3D118%26FechaFirma%3D16-10-2021%"
-            "252000%3A00%3A00%26CodigoSeguridad%3Du83ac1"
+            "haEmision%3D16-10-2021%26MontoTotal%3D118%26FechaFirma%3D16-10-2021+"
+            "00%3A00%3A00%26CodigoSeguridad%3Du83ac1"
         )
 
         sign_date = "2021-10-16"
@@ -707,6 +707,17 @@ class AccountMoveTest(common.L10nDOTestsCommon):
         invoice_2._post()
         self.assertEqual(invoice_2.name, "INV/%s/0002" % invoice_2.date.year)
         self.assertEqual(invoice_2.l10n_do_fiscal_number, "B0100000002")
+
+        # Unit test to verify if the invoice number or document number is repeated
+        invoice_3 = self._create_l10n_do_invoice(
+            data={
+                "invoice_date": "2023-05-08",
+            }
+        )
+        invoice_3._post()
+        self.assertEqual(invoice_3.name, "INV/%s/0001" % invoice_3.date.year)
+        self.assertNotEqual(invoice_3.l10n_do_fiscal_number, "B0100000001")
+        self.assertEqual(invoice_3.l10n_do_fiscal_number, "B0100000003")
 
     def test_010_ncf_format(self):
         with self.assertRaises(ValidationError):
